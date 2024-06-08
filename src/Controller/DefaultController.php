@@ -27,12 +27,13 @@ class DefaultController extends AbstractController
     }
 
     #[Route('/', name: 'app_index', methods: ['GET'])]
-    public function index(PersonFactory $personFactory): Response
+    public function index(): Response
     {
         $persons = $this->personFactory->createMany(self::PERSONS_CREATE_AMOUNT);
         return $this->render('default/index.html.twig', [
             'regions' => Region::cases(),
-            'persons' => $persons
+            'persons' => $persons,
+            'defaultRegion' => Region::USA->value
         ]);
     }
     #[Route('/create', name: 'app_create', methods: ['POST'])]
@@ -40,9 +41,19 @@ class DefaultController extends AbstractController
     {
         $postData = json_decode($request->getContent());
         $parameters = array();
+
         foreach ($postData as $data)
             $parameters[$data[0]] = $data[1];
-        $persons = $this->personFactory->createMany(self::PERSONS_CREATE_AMOUNT, $parameters['seed'],  $parameters['error'],  $parameters['region']);
+
+        $region = empty($parameters['region']) ? Region::USA->value : $parameters['region'];
+
+        $persons = $this->personFactory->createMany(
+            amount: self::PERSONS_CREATE_AMOUNT,
+            seed: intval($parameters['seed']),
+            errorsAmount: intval($parameters['error']),
+            region: $region
+        );
+
         $response = $this->renderView('default/persons.html.twig', [
             'persons' => $persons
         ]);
@@ -53,7 +64,18 @@ class DefaultController extends AbstractController
     #[Route('/update', name: 'app_update', methods: ['POST'])]
     public function update(Request $request): Response
     {
-        $persons = $this->personFactory->updateMany(self::PERSONS_UPDATE_AMOUNT);
+        $postData = json_decode($request->getContent());
+        $parameters = array();
+        foreach ($postData as $data)
+            $parameters[$data[0]] = $data[1];
+
+        $persons = $this->personFactory->createMany(
+            amount: self::PERSONS_UPDATE_AMOUNT,
+            id: intval($parameters['id']),
+            seed: intval($parameters['seed']),
+            errorsAmount: intval($parameters['error']),
+            region: $parameters['region'] ?? Region::USA->value
+        );
 
         $response = $this->renderView('default/persons.html.twig', [
             'persons' => $persons,
