@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Region;
 use App\Service\PersonFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,9 +16,10 @@ class DefaultController extends AbstractController
     #[Route('/', name: 'app_index')]
     public function index(PersonFactory $personFactory): Response
     {
-        $persons = $personFactory->createMany(self::PERSONS_CREATE_AMOUNT);
+        $persons = $personFactory->createMany(self::PERSONS_CREATE_AMOUNT, 1234, 0, Region::Poland->value);
         return $this->render('default/index.html.twig', [
             'persons' => $persons,
+            'regions' => Region::cases()
         ]);
     }
 

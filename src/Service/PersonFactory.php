@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Person;
+use App\Entity\Region;
 use Faker\Factory;
 use Faker\Generator;
 
@@ -20,25 +21,15 @@ class PersonFactory
         $this->errorsAmount = 0;
     }
 
-    public function setRegion(string $region): void
-    {
-        $this->faker = Factory::create($region);
-    }
-
-    public function setSeed(int $seed): void
-    {
-        $this->faker->seed($seed);
-    }
-
-    public function setErrorsAmount(int $errorsAmount):void
-    {
-        $this->errorsAmount = $errorsAmount;
-    }
-
-    public function createMany(int $amount) : array
+    public function createMany(int $amount, int $seed = 1000, int $errorsAmount = 0, string $region = Region::USA->value) : array
     {
         self::$id = 1;
+
+        $this->faker = Factory::create($region);
+        $this->faker->seed($seed);
+        $this->errorsAmount = $errorsAmount;
         $persons = array();
+
         for ($i = 0; $i < $amount; $i++, self::$id++)
             $persons[] = self::createPerson();
         return $persons;
@@ -61,5 +52,10 @@ class PersonFactory
         $person->setAddress($this->faker->address());
         $person->setPhoneNumber($this->faker->phoneNumber());
         return $person;
+    }
+
+    private function errorsString(array $persons) : void
+    {
+
     }
 }
