@@ -29,7 +29,7 @@ class DefaultController extends AbstractController
     #[Route('/', name: 'app_index', methods: ['GET'])]
     public function index(PersonFactory $personFactory): Response
     {
-        $persons = $this->personFactory->createMany(self::PERSONS_UPDATE_AMOUNT);
+        $persons = $this->personFactory->createMany(self::PERSONS_CREATE_AMOUNT);
         return $this->render('default/index.html.twig', [
             'regions' => Region::cases(),
             'persons' => $persons

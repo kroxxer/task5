@@ -56,8 +56,21 @@
         <br>
         <h1>Persons</h1>
         <br>
-        <div class="table-responsive mx-5" id="persons">
-            {% include "default/persons.html.twig" %}
+        <div class="table-responsive mx-5" >
+            <table class="table table-striped table-bordered text-center container">
+                <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Identity</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Address</th>
+                    <th scope="col">Phone</th>
+                </tr>
+                </thead>
+                <tbody id="persons">
+                    {% include "default/persons.html.twig" %}
+                </tbody>
+            </table>
         </div>
     </main>
     <script>
@@ -71,7 +84,9 @@
                     'Content-Type': 'application/json;charset=utf-8'
                 },
                 body: JSON.stringify(Array.from(parameters.entries()))
-            }).then(response => response.text()).then(response => document.getElementById('persons').innerHTML = response);
+            })
+                .then(response => response.text())
+                .then(response => document.getElementById('persons').innerHTML = response);
         });
 
         document.getElementById('seed').addEventListener('input', async () => {
@@ -131,14 +146,21 @@
                     'Content-Type': 'application/json;charset=utf-8'
                 },
                 body: JSON.stringify(Array.from(parameters.entries()))
-            });
+            })
+                .then(response => response.text())
+                .then(response => {
+                    let text = document.getElementById('persons').innerHTML;
+                    document.getElementById('persons').innerHTML = text + response;
+                });
         });
+
         function getParameters()
         {
             let parameters = new Map();
             parameters.set('seed', document.getElementById('seed').value);
             parameters.set('region', document.getElementById('region').value);
             parameters.set('error', document.getElementById('errors-input').value);
+            parameters.set('id', document.getElementsByTagName('tr').length)
             return parameters;
         }
     </script>
