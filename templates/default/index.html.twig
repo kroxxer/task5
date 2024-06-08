@@ -56,33 +56,90 @@
         <br>
         <h1>Persons</h1>
         <br>
-        <div class="table-responsive mx-5">
-            <table class="table table-striped table-bordered text-center container">
-                <thead>
-                <tr>
-                    <th scope="col">Id</th>
-                    <th scope="col">Identity</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Address</th>
-                    <th scope="col">Phone</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for person in persons %}
-                    <tr>
-                        <td>{{ person.id }}</td>
-                        <td>{{ person.identity }}</td>
-                        <td>{{ person.name }}</td>
-                        <td>{{ person.address }}</td>
-                        <td>{{ person.phoneNumber }}</td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="6">no records found</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+        <div class="table-responsive mx-5" id="persons">
+            {% include "default/persons.html.twig" %}
         </div>
     </main>
+    <script>
+        document.getElementById('random').addEventListener('click', async () => {
+            document.getElementById('seed').value = Math.floor(Math.random() * 1000);
+            let parameters = getParameters();
+            console.log();
+            await fetch("{{ path('app_create') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify(Array.from(parameters.entries()))
+            }).then(response => response.text()).then(response => document.getElementById('persons').innerHTML = response);
+        });
+
+        document.getElementById('seed').addEventListener('input', async () => {
+            console.log('Change seed');
+
+            let request = await fetch("{{ path('app_create') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+
+            });
+        });
+
+        document.getElementById('errors-slider').addEventListener('input', async () => {
+            document.getElementById('errors-input').value = document.getElementById('errors-slider').value;
+            console.log('Change error slider');
+            let request = await fetch("{{ path('app_create') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+
+            });
+        });
+
+        document.getElementById('errors-input').addEventListener('input', async () => {
+            document.getElementById('errors-slider').value = document.getElementById('errors-input').value;
+            console.log('Change error input');
+            let request = await fetch("{{ path('app_create') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+
+            });
+        });
+
+        document.getElementById('region').addEventListener('input', async () => {
+            document.getElementById('errors-slider').value = document.getElementById('errors-input').value;
+            console.log('Change region');
+            let request = await fetch("{{ path('app_create') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+
+            });
+        });
+
+        window.addEventListener("scrollend", async () => {
+            let parameters = getParameters();
+            console.log("Scroll End");
+            let request = await fetch("{{ path('app_update') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify(Array.from(parameters.entries()))
+            });
+        });
+        function getParameters()
+        {
+            let parameters = new Map();
+            parameters.set('seed', document.getElementById('seed').value);
+            parameters.set('region', document.getElementById('region').value);
+            parameters.set('error', document.getElementById('errors-input').value);
+            return parameters;
+        }
+    </script>
 {% endblock %}
