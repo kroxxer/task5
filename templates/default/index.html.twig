@@ -106,7 +106,6 @@
             let head = [...headHtml].map(head => head.innerText.replaceAll('\t', ';')) + '\n';
             let persons = [...personsHtml].map(person => person.innerText.replaceAll('\t',';')).join('\n');
             let csvContent = "data:text/csv;charset=utf-8," + head + persons;
-            console.log(csvContent);
             let encodedUri = encodeURI(csvContent);
             window.open(encodedUri);
         });
