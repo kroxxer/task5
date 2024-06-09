@@ -90,6 +90,8 @@
 
         document.getElementById('errors-input').addEventListener('input', async () => {
             document.getElementById('errors-slider').value = document.getElementById('errors-input').value;
+            if(parseFloat(document.getElementById('errors-input').value) > 1000.0)
+                document.getElementById('errors-input').value = '1000';
             await updatePersons("{{ path('app_create') }}");
         });
 

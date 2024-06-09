@@ -27,7 +27,7 @@ class PersonFactory
         $this->faker = Factory::create($region);
         $this->id = $id;
         $this->faker->seed($seed);
-        list($this->errorsAmountDecimal, $this->errorsAmountFloat) = sscanf($errorsAmount,'%d.%d');
+        list($this->errorsAmountDecimal, $this->errorsAmountFloat) = sscanf(number_format($errorsAmount, 2, '.',''),'%d.%d');
         $persons = array();
         for ($i = 0; $i < $amount; $i++, $this->id++)
         {
@@ -66,7 +66,7 @@ class PersonFactory
         $errors = $this->errorsAmountDecimal;
         if ($this->errorsAmountFloat > 0)
         {
-            $arrayAmount = 10 ** strlen(strval($this->errorsAmountFloat));
+            $arrayAmount = 100;
             $oneAmount = $this->errorsAmountFloat;
             $oneArray = [];
             for($i = 0; $i < $arrayAmount; $i++, $oneAmount--)

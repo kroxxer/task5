@@ -50,7 +50,7 @@ class DefaultController extends AbstractController
         $persons = $this->personFactory->createMany(
             amount: self::PERSONS_CREATE_AMOUNT,
             seed: intval($parameters['seed']),
-            errorsAmount: intval($parameters['error']),
+            errorsAmount: floatval($parameters['error']),
             region: $region
         );
 
@@ -73,7 +73,7 @@ class DefaultController extends AbstractController
             amount: self::PERSONS_UPDATE_AMOUNT,
             id: intval($parameters['id']),
             seed: intval($parameters['seed']),
-            errorsAmount: intval($parameters['error']),
+            errorsAmount: floatval($parameters['error']),
             region: $parameters['region'] ?? Region::USA->value
         );
 
