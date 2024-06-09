@@ -48,7 +48,7 @@
                         </button>
                     </li>
                     <li class="nav-item mx-2">
-                        <button class="btn btn-primary button-large">Export to CSV</button>
+                        <button class="btn btn-primary button-large" id="csv">Export to CSV</button>
                     </li>
                 </ul>
             </div>
@@ -59,7 +59,7 @@
         <div class="table-responsive mx-5" >
             <table class="table table-striped table-bordered text-center container">
                 <thead>
-                <tr>
+                <tr id="head">
                     <th scope="col">Id</th>
                     <th scope="col">Identity</th>
                     <th scope="col">Name</th>
@@ -98,6 +98,17 @@
         document.getElementById('region').addEventListener('input', async () => {
             document.getElementById('errors-slider').value = document.getElementById('errors-input').value;
             await updatePersons("{{ path('app_create') }}");
+        });
+
+        document.getElementById('csv').addEventListener('click', () => {
+            let personsHtml = document.querySelectorAll('.person');
+            let headHtml = document.querySelectorAll('tr#head');
+            let head = [...headHtml].map(head => head.innerText.replaceAll('\t', ';')) + '\n';
+            let persons = [...personsHtml].map(person => person.innerText.replaceAll('\t',';')).join('\n');
+            let csvContent = "data:text/csv;charset=utf-8," + head + persons;
+            console.log(csvContent);
+            let encodedUri = encodeURI(csvContent);
+            window.open(encodedUri);
         });
 
         window.addEventListener("scrollend", async () => {
@@ -139,5 +150,6 @@
                 .then(response => response.text())
                 .then(response => document.getElementById('persons').innerHTML = response);
         }
+
     </script>
 {% endblock %}
