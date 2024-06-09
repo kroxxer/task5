@@ -27,9 +27,12 @@ class PersonFactory
         $this->faker->seed($seed);
         $this->errorsAmount = $errorsAmount;
         $persons = array();
-
         for ($i = 0; $i < $amount; $i++, $this->id++)
-            $persons[] = self::createPerson();
+        {
+            $person = $this->createPerson();
+            $this->errorsPerson($person);
+            $persons[] = $person;
+        }
         return $persons;
     }
 
@@ -56,8 +59,52 @@ class PersonFactory
         return $person;
     }
 
-    private function errorsString(array $persons) : void
+    private function errorsPerson(Person $person) : void
     {
+        for ($i = 0; $i < $this->errorsAmount; $i++)
+        {
+            switch ($this->faker->numberBetween(1, 3))
+            {
+                case 1:
+                    $person->setName($this->errorString($person->getName()));
+                    break;
+                case 2:
+                    $person->setAddress($this->errorString($person->getAddress()));
+                    break;
+                case 3:
+                    $person->setPhoneNumber($this->errorString($person->getPhoneNumber()));
+                    break;
+            }
+        }
+    }
+    private function errorString(string $personInfo) : string
+    {
+        switch ($this->faker->numberBetween(1,3))
+        {
+            case 1:
+                $deleteIndex = $this->faker->numberBetween(0, mb_strlen($personInfo) - 1);
+                return mb_substr($personInfo, 0, $deleteIndex) . mb_substr($personInfo, $deleteIndex + 1);
+            case 2:
+                $addIndex = $this->faker->numberBetween(0, mb_strlen($personInfo) - 1);
+                return mb_substr($personInfo, 0, $addIndex) . $this->faker->randomLetter() . mb_substr($personInfo, $addIndex);
+            case 3:
+                $swapIndex = $this->faker->numberBetween(1, mb_strlen($personInfo) - 2);
+                $result = "";
+                switch( $this->faker->randomElement([-1,1]) )
+                {
+                    case 1:
+                        $result = mb_substr($personInfo, 0, $swapIndex) . mb_substr($personInfo, $swapIndex + 1, 1) .
+                                    mb_substr($personInfo, $swapIndex, 1) . mb_substr($personInfo, $swapIndex + 2);
+                        break;
+                    case -1:
+                        $result = mb_substr($personInfo, 0, $swapIndex - 1) . mb_substr($personInfo, $swapIndex, 1) .
+                                    mb_substr($personInfo, $swapIndex -1, 1) . mb_substr($personInfo, $swapIndex + 1);
+                        break;
+                }
 
+                return $result;
+            default:
+                return "Error";
+        }
     }
 }
