@@ -12,25 +12,27 @@ class PersonFactory
     private int $id;
     private Generator $faker;
 
-    private int $errorsAmount;
+    private int $errorsAmountDecimal;
+    private int $errorsAmountFloat;
 
     public function __construct()
     {
         $this->id = 1;
-        $this->errorsAmount = 0;
+        $this->errorsAmountDecimal = 0;
+        $this->errorsAmountFloat = 0;
     }
 
-    public function createMany(int $amount, int $id = 1, int $seed = 1000, int $errorsAmount = 0, string $region = Region::USA->value) : array
+    public function createMany(int $amount, int $id = 1, int $seed = 1000, float $errorsAmount = 0, string $region = Region::USA->value) : array
     {
         $this->faker = Factory::create($region);
         $this->id = $id;
         $this->faker->seed($seed);
-        $this->errorsAmount = $errorsAmount;
+        list($this->errorsAmountDecimal, $this->errorsAmountFloat) = sscanf($errorsAmount,'%d.%d');
         $persons = array();
         for ($i = 0; $i < $amount; $i++, $this->id++)
         {
             $person = $this->createPerson();
-            $this->errorsPerson($person);
+            $this->fakePerson($person);
             $persons[] = $person;
         }
         return $persons;
@@ -59,25 +61,38 @@ class PersonFactory
         return $person;
     }
 
-    private function errorsPerson(Person $person) : void
+    private function fakePerson(Person $person) : void
     {
-        for ($i = 0; $i < $this->errorsAmount; $i++)
+        $errors = $this->errorsAmountDecimal;
+        if ($this->errorsAmountFloat > 0)
+        {
+            $arrayAmount = 10 ** strlen(strval($this->errorsAmountFloat));
+            $oneAmount = $this->errorsAmountFloat;
+            $oneArray = [];
+            for($i = 0; $i < $arrayAmount; $i++, $oneAmount--)
+            {
+                $oneArray[] = ($oneAmount > 0) ? 1 : 0;
+            }
+            $errors += $this->faker->randomElement($oneArray);
+        }
+
+        for ($i = 0; $i < $errors; $i++)
         {
             switch ($this->faker->numberBetween(1, 3))
             {
                 case 1:
-                    $person->setName($this->errorString($person->getName()));
+                    $person->setName($this->fakeString($person->getName()));
                     break;
                 case 2:
-                    $person->setAddress($this->errorString($person->getAddress()));
+                    $person->setAddress($this->fakeString($person->getAddress()));
                     break;
                 case 3:
-                    $person->setPhoneNumber($this->errorString($person->getPhoneNumber()));
+                    $person->setPhoneNumber($this->fakeString($person->getPhoneNumber()));
                     break;
             }
         }
     }
-    private function errorString(string $personInfo) : string
+    private function fakeString(string $personInfo) : string
     {
         switch ($this->faker->numberBetween(1,3))
         {
